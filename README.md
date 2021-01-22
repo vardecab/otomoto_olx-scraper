@@ -14,7 +14,7 @@
 
 ## Release History
 
-<!-- - 0.2: lorem ipsum -->
+- 0.2: Opening URLs from search results. Windows 10 notification when opening URLs; delaying crawling; renamed some variables for better clarity.
 - 0.1: Initial release.
 
 ## Versioning
@@ -28,10 +28,10 @@ Using [SemVer](http://semver.org/).
 ## Acknowledgements
 
 - [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/)
-- [Progress bar](https://github.com/rsalmei/alive-progress)
+- [alive-progress](https://github.com/rsalmei/alive-progress)
 - [termcolor](https://pypi.org/project/termcolor/)
+- [win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications)
 <!-- - []()
-- []()
 - []()
 - []() -->
 

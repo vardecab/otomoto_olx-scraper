@@ -1,4 +1,7 @@
 TODO
 .vscode
 _old
-output
+output/*
+!output/.gitkeep
+icons/link.ico
+icons/browser.ico 
