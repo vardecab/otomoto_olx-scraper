@@ -1,6 +1,6 @@
 # otomoto-scraper
 
->Scrape URLs from otomoto.pl
+>Scrape URLs with car offers from Otomoto.
 
 <!-- Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cumanos sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. -->
 
@@ -14,6 +14,7 @@
 
 ## Release History
 
+- 0.3: Disabled user input; improved compatibility with macOS.
 - 0.2: Opening URLs from search results. Windows 10 notification when opening URLs; delaying crawling; renamed some variables for better clarity.
 - 0.1: Initial release.
 
