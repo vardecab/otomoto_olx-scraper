@@ -1,32 +1,33 @@
 # === libs ===
 
-import requests # HTTP requests
 from urllib.request import urlopen # open URLs
 from bs4 import BeautifulSoup # BeautifulSoup; parsing HTML
 import re # regex; extract substrings
 from datetime import datetime # calculate script's run time
 from alive_progress import alive_bar # progress bar
 import time # delay execution; https://stackoverflow.com/questions/3327775/can-the-execution-of-statements-in-python-be-delayed
-from termcolor import colored # colored input/output in terminal
-import webbrowser # open browser and download file 
-from win10toast import ToastNotifier # Windows 10 notifications
+import webbrowser # open browser  
 import sys # exit()
+import ssl # fix certificate issue: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
+import certifi # fix certificate issue: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
 from sys import platform # check platform (Windows/Linux/macOS)
+if platform == 'win32':
+    from win10toast_persist import ToastNotifier # Windows 10 notifications
+    toaster = ToastNotifier() # initialize win10toast
+    from termcolor import colored # colored input/output in terminal
 
 # === start + run time ===
 
-print (colored("Starting...", 'green'))
+print ("Starting...")
 start = datetime.now()  # run time
-
-toaster = ToastNotifier() # initialize win10toast
 
 # === URLs to scrape ===
 
-page_url = 'https://www.otomoto.pl/osobowe/tarnow/?search%5Bfilter_float_price%3Ato%5D=12000&search%5Bfilter_float_engine_power%3Afrom%5D=80&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_no_accident%5D=1&search%5Border%5D=filter_float_engine_power%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=90&search%5Bcountry%5D=&page='
+page_url = 'https://www.otomoto.pl/osobowe/tarnow/?search%5Bfilter_float_price%3Ato%5D=11000&search%5Bfilter_float_engine_power%3Afrom%5D=120&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_no_accident%5D=1&search%5Border%5D=filter_float_engine_power%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=90&search%5Bcountry%5D=&page='
 # *params:
-# price_max = 12k
+# price_max = 11k
 # bezwypadkowy, nieuszkodzony
-# >= 80 KM
+# >= 120 KM
 # Tarnów + 90 km
 # sorted desc by KM
 
@@ -55,11 +56,11 @@ def pullData(page_url):
             time.sleep(1)
             bar()
 
-    print (colored("Opening page...", 'green')) # green output in terminal
+    print ("Opening page...")
     print (page_url) # 🐛 debug
-    page = urlopen(page_url)
+    page = urlopen(page_url, context=ssl.create_default_context(cafile=certifi.where())) # fix certificate issue
     
-    print (colored("Scraping page...", 'green'))
+    print ("Scraping page...")
     soup = BeautifulSoup(page, 'html.parser')  # parse the page
     
     # local_file = r"output/bs_output.txt"
@@ -80,10 +81,14 @@ def pullData(page_url):
 
 # === run URLs in function ^ ===
 
-open(r"output/bs_output.txt", "w").close() # clean main file at start
+# open(r"output/bs_output.txt", "w").close() # clean main file at start
+try:
+    open(r"output/bs_output.txt", "w").close() # clean main file at start
+except: # crashes on 1st run when file is not yet created
+    print ("Nothing to clean, moving on...")
 
-# number_of_pages_to_crawl = int(input("Ile podstron chcesz przejrzeć? >>> ")) # give user choice
-number_of_pages_to_crawl = 3
+number_of_pages_to_crawl = int(input("Ile podstron chcesz przejrzeć? >>> ")) # give user choice
+# number_of_pages_to_crawl = 3
 
 page_number = 1 # begin at page=1
 # with alive_bar(number_of_pages_to_crawl, bar="circles", spinner="dots_waves") as bar:
@@ -98,7 +103,7 @@ for page in range(1,number_of_pages_to_crawl+1):
 # === make file more pretty by adding new lines ===
 
 with open(r"output/bs_output.txt", "r", encoding="utf-8") as local_file:  # open file...
-    print (colored("Reading file to clean up...", 'green'))
+    print ("Reading file to clean up...")
     read_local_file = local_file.read()  # ... and read it
 urls_line_by_line = re.sub(r"#[a-zA-Z0-9]+(?!https$)://", "\n", read_local_file) # add new lines
 urls_line_by_line = urls_line_by_line.replace("www", "https://www") # make text clickable 
@@ -106,7 +111,7 @@ urls_line_by_line = urls_line_by_line.replace("www", "https://www") # make text 
 # === remove duplicates ===
 
 with open(r"output/urls_line_by_line.txt", "w", encoding="utf-8") as file_urls_line_by_line:
-    print (colored("Cleaning the file...", 'green'))
+    print ("Cleaning the file...")
     file_urls_line_by_line.write(urls_line_by_line)
 lines_seen = set() # holds lines already seen
 # open(r"output/urls_line_by_line_no_dupes.txt", "w").close()
@@ -119,19 +124,19 @@ for line in open(r"output/urls_line_by_line.txt", "r"):
         lines_seen.add(line)
 outfile.close()
 
-print (colored("File cleaned up. New lines added.", 'green'))
+print ("File cleaned up. New lines added.")
 print ("There are:", line_counter, "cars.")
 
 # === tailor the results by using a keyword: brand, model (possibly also engine size etc) ===
 
-# regex_user_input = input("Jak chcesz zawęzić wyniki? Możesz wpisać markę (np. BMW) albo model (np. E39) >>> ") # for now using brand as quesion but user can put any one-word keyword
-regex_user_input = "bmw"
+regex_user_input = input("Jak chcesz zawęzić wyniki? Możesz wpisać markę (np. BMW) albo model (np. E39) >>> ") # for now using brand as quesion but user can put any one-word keyword
+# regex_user_input = ""
 regex_user_input = regex_user_input.strip() # strip front & back
 reg = re.compile(regex_user_input) # matches "KEYWORD" in lines
 print ("Opening file to search for keyword:", regex_user_input)
 counter2 = 0 # another counter to get the # of search results
 with open(r'output/search-output.txt', 'w') as output: # open file for writing
-    print (colored("Searching for keyword...", 'green'))
+    print ("Searching for keyword...")
     with open(r'output/urls_line_by_line_no_dupes.txt', 'r', encoding='UTF-8') as no_dupes_file:
         with alive_bar(bar="circles", spinner="dots_waves") as bar:
             for line in no_dupes_file:  # read file line by line
@@ -143,17 +148,17 @@ with open(r'output/search-output.txt', 'w') as output: # open file for writing
         if counter2 == 1:
             print ("Found", counter2, "result.") 
             if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Found " + str(counter2) + " result.",  icon_path="icons/www.ico", duration=3)
+                toaster.show_toast("otomoto-scraper", "Found " + str(counter2) + " result.",  icon_path="icons/www.ico", duration=None)
         else:
             print ("Found", counter2, "results.")  
             if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Found " + str(counter2) + " results.",  icon_path="icons/www.ico", duration=3)
+                toaster.show_toast("otomoto-scraper", "Found " + str(counter2) + " results.",  icon_path="icons/www.ico", duration=None)
 
 # === open search results in browser ===
 
 if counter2 != 0:
-    # user_choice_open_urls = input("Chcesz otworzyć linki w przeglądarce? [y/n] >>> ")   
-    user_choice_open_urls = 'y'
+    user_choice_open_urls = input("Chcesz otworzyć linki w przeglądarce? [y/n] >>> ")   
+    # user_choice_open_urls = 'n'
     if user_choice_open_urls == 'y':
         with open(r'output/search-output.txt', 'r', encoding='UTF-8') as search_results:
             counter3 = 0
@@ -166,11 +171,11 @@ if counter2 != 0:
         if counter3 != 1: # correct grammar for multiple (URLs; them; they)
             print ("Opened ", str(counter3), " URLs in the browser. Go and check them before they go 404 ;)") 
             if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) + " URLs.",  icon_path="icons/www.ico", duration=3)
+                toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) + " URLs.",  icon_path="icons/www.ico", duration=None)
         else: # correct grammar for 1 (URL; it)
             print ("Opened", counter3, "URL in the browser. Go and check it before it goes 404 ;)") 
             if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) + " URL.",  icon_path="icons/www.ico", duration=3)
+                toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) + " URL.",  icon_path="icons/www.ico", duration=None)
     else:
         print ("Ok - URLs saved in 'output/search-output.txt' anyway.")
         print ("Script run time:", datetime.now()-start)

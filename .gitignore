@@ -5,3 +5,8 @@ output/*
 !output/.gitkeep
 icons/link.ico
 icons/browser.ico 
+exe
+__pycache__
+mm-excel
+scraper_mac.py
+output_mac
