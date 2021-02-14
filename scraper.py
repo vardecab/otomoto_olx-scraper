@@ -32,22 +32,22 @@ today_date = datetime.strftime(datetime.now(), '%y%m%d_%f') # YYMMDD_microsecond
 
 # create new YYMMDD_microsecond folder
 if not os.path.isdir("/output/" + today_date):
-    os.mkdir("output/" + today_date)
+    os.mkdir("output/" + today_date) # example: 211220_123456
     print("Folder created: " + today_date)
 
 filename = 'date.pk'
 try:  # might crash on first run
     # load your data back to memory so we can save new value; NOTE: b = binary
     with open(filename, 'rb') as file:
-        previous_date = pickle.load(file)
-        print("Prev date:", previous_date)
+        previous_date = pickle.load(file) # keep previous_date (last time the script ran) in a file so we can retrieve it later and compare / diff files 
+        print("Prev date:", previous_date) # debug 
 except IOError:
-    print("First run - no file exists.")
+    print("First run - no file exists.") # if it's the first time script is running we won't have the file created so we skip  
 
 try:
     with open(filename, 'wb') as file:  # open pickle file
-        pickle.dump(today_date, file)  # dump your data into the file
-        print("Today date: ", today_date)
+        pickle.dump(today_date, file)  # dump today_date (the time script is running) into the file so then we can use it to compare / diff files
+        print("Today date: ", today_date) # debug 
 except IOError:
     print("File doesn't exist.")
 
@@ -64,9 +64,9 @@ event_name = 'new-car-otomoto'
 ifttt_maker_key = 'TIRnRB6mBIf2k7j36_Z3l'
 webhook_url = f'https://maker.ifttt.com/trigger/{event_name}/with/key/{ifttt_maker_key}'
 
-def email_alert(first):
+def email_alert(url):
     report = {}
-    report["value1"] = first
+    report["value1"] = url
     # report["value2"] = second
     # report["value3"] = third
     requests.post(webhook_url, data=report)
@@ -84,18 +84,18 @@ def pullData(page_url):
             bar()
 
     print("Opening page...")
-    # print (page_url) # 🐛 debug
+    # print (page_url) # debug
     page = urlopen(page_url, context=ssl.create_default_context(
-        cafile=certifi.where()))  # fix certificate issue
+        cafile=certifi.where())) # fix certificate issue
 
     print("Scraping page...")
-    soup = BeautifulSoup(page, 'html.parser')  # parse the page
+    soup = BeautifulSoup(page, 'html.parser') # parse the page
 
     # local_file = r"output/bs_output.txt"
 
     # 'a' (append) to add lines to existing file vs overwriting
     with open(r"output/" + today_date + "/1-bs_output.txt", "a", encoding="utf-8") as bs_output:
-        # print (colored("Creating local file to store URLs...", 'green'))
+        # print (colored("Creating local file to store URLs...", 'green')) # colored text on Windows
         counter = 0  # counter to get # of URLs/cars
         with alive_bar(bar="circles", spinner="dots_waves") as bar:  # progress bar
             for link in soup.find_all("a", {"class": "offer-title__link"}):
@@ -124,10 +124,10 @@ page_number = 1  # begin at page=1
 # with alive_bar(number_of_pages_to_crawl, bar="circles", spinner="dots_waves") as bar:
 for page in range(1, number_of_pages_to_crawl+1):
     print("Page number:", page_number, "/",
-          number_of_pages_to_crawl)  # 🐛 debug
+          number_of_pages_to_crawl)  # debug
     full_page_url = f"{page_url}{page_number}"
     pullData(full_page_url)
-    # print ("Full page URL:", full_page_url) # 🐛 debug
+    # print ("Full page URL:", full_page_url) # debug
     # bar()
     page_number += 1  # go to next page
 
@@ -137,10 +137,8 @@ for page in range(1, number_of_pages_to_crawl+1):
 with open(r"output/" + today_date + "/1-bs_output.txt", "r", encoding="utf-8") as local_file:
     print("Reading file to clean up...")
     read_local_file = local_file.read()  # ... and read it
-urls_line_by_line = re.sub(
-    r"#[a-zA-Z0-9]+(?!https$)://", "\n", read_local_file)  # add new lines
-urls_line_by_line = urls_line_by_line.replace(
-    "www", "https://www")  # make text clickable
+urls_line_by_line = re.sub(r"#[a-zA-Z0-9]+(?!https$)://", "\n", read_local_file)  # add new lines
+urls_line_by_line = urls_line_by_line.replace("www", "https://www")  # make text clickable
 
 # === remove duplicates ===
 
@@ -149,8 +147,7 @@ with open(r"output/" + today_date + "/2-urls_line_by_line.txt", "w", encoding="u
     file_urls_line_by_line.write(urls_line_by_line)
 lines_seen = set()  # holds lines already seen
 # open(r"output/urls_line_by_line_no_dupes.txt", "w").close()
-outfile = open(r"output/" + today_date +
-               "/3-urls_line_by_line_no_dupes.txt", "w")
+outfile = open(r"output/" + today_date + "/3-urls_line_by_line_no_dupes.txt", "w")
 line_counter = 0
 for line in open(r"output/" + today_date + "/2-urls_line_by_line.txt", "r"):
     if line not in lines_seen:  # not a duplicate
@@ -228,28 +225,28 @@ else:
 # === compare files === 
 
 try:
-    file_previous_run = open('output/' + previous_date + '/4-search-output.txt', 'r')
-    file_current_run = open('output/' + today_date + '/4-search-output.txt', 'r')
+    file_previous_run = open('output/' + previous_date + '/4-search-output.txt', 'r') # 1st file 
+    file_current_run = open('output/' + today_date + '/4-search-output.txt', 'r') # 2nd file 
 
-    f1 = [x for x in file_previous_run.readlines()]
-    f2 = [x for x in file_current_run.readlines()]
+    f1 = [x for x in file_previous_run.readlines()] # set with lines from 1st file  
+    f2 = [x for x in file_current_run.readlines()] # set with lines from 2nd file 
 
-    diff = [line for line in f1 if line not in f2] # lines present only in f1
-    diff1 = [line for line in f2 if line not in f1] # lines present only in f2
+    diff = [line for line in f1 if line not in f2] # lines present only in 1st file 
+    diff1 = [line for line in f2 if line not in f1] # lines present only in 2nd file 
     # *NOTE file2 must be > file1
 
     # print (diff1) # debug
 
     if len(diff1) == 0: # check if set is empty - if it is then there are no differences between files 
-        print('No difference between files.')
+        print('Files are the same.')
     else:
-        # with open('output/' + today_date + '/diff.txt', 'w') as w:
         with open('diff/diff-' + today_date + '.txt', 'w') as w:
-            counter4 = 0
-            for item in diff1: 
-                w.write(item)
-                email_alert(item) # send email 
-                counter4 += 1
+            counter4 = 0 # counter 
+            for item in diff1: # go piece by piece through the differences 
+                w.write(item) # write to file
+                email_alert(item) # send email with URL
+                # print("Email has been sent.")
+                counter4 += 1 # counter++
         if counter4 <= 0:
             print ('No new cars since last run.')
         else:
