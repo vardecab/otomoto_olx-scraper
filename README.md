@@ -1,6 +1,6 @@
 # otomoto-scraper
 
->Scrape URLs with car offers from Otomoto․pl.
+>Scrape car offers from Otomoto․pl and send email when new car matching search criteria is found.
 
 <!-- Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cumanos sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. -->
 
