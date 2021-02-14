@@ -14,6 +14,7 @@
 
 ## Release History
 
+- 0.7: Notifications (Windows & macOS; showing script's run time in seconds; improved regex formula to remove IDs at the end of URLs. 
 - 0.6: Sending email via IFTTT if new car is found.
 - 0.5: Disabled user input once again - hardcoded values; implemented file diff; files & folders are created with unique ID.
 - 0.4: Re-enabled user input; minor tweak to URL params; improved compatibility with macOS.
@@ -33,11 +34,13 @@ Using [SemVer](http://semver.org/).
 
 - [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/)
 - [alive-progress](https://github.com/rsalmei/alive-progress)
-- [termcolor](https://pypi.org/project/termcolor/)
+- [IFTTT](https://ifttt.com/)
 - [win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications)
-<!-- - []()
-- []()
-- []() -->
+- [pync](https://github.com/SeTeM/pync)
+- [Flaticon](https://www.flaticon.com/)
+- [Connect a Python Script to IFTTT by Enrico Bergamini](https://medium.com/mai-piu-senza/connect-a-python-script-to-ifttt-8ee0240bb3aa)
+- [Use IFTTT web requests to send email alerts by Anthony Hartup](https://anthscomputercave.com/tutorials/ifttt/using_ifttt_web_request_email.html)
+<!-- - [termcolor](https://pypi.org/project/termcolor/) -->
 
 <!-- ## Contributing -->
 
