@@ -14,6 +14,7 @@
 
 ## Release History
 
+- 0.6: Sending email via IFTTT if new car is found.
 - 0.5: Disabled user input once again - hardcoded values; implemented file diff; files & folders are created with unique ID.
 - 0.4: Re-enabled user input; minor tweak to URL params; improved compatibility with macOS.
 - 0.3: Disabled user input; improved compatibility with macOS.

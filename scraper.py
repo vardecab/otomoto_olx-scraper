@@ -10,7 +10,7 @@ from datetime import datetime  # calculate script's run time
 from alive_progress import alive_bar  # progress bar
 import time  # delay execution; https://stackoverflow.com/questions/3327775/can-the-execution-of-statements-in-python-be-delayed
 import webbrowser  # open browser
-import sys  # exit()
+# import sys  # exit()
 import ssl  # fix certificate issue: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
 import certifi  # fix certificate issue: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
 from sys import platform  # check platform (Windows/Linux/macOS)
@@ -18,6 +18,7 @@ if platform == 'win32':
     from win10toast_persist import ToastNotifier  # Windows 10 notifications
     toaster = ToastNotifier()  # initialize win10toast
     from termcolor import colored  # colored input/output in terminal
+import requests # for IFTTT integration / webhook to send emails
 
 # === start + run time ===
 
@@ -25,6 +26,7 @@ print("Starting...")
 start = datetime.now()  # run time
 
 # === have current date in exported files' names ===
+
 # https://www.w3schools.com/python/python_datetime.asp
 today_date = datetime.strftime(datetime.now(), '%y%m%d_%f') # YYMMDD_microsecond
 
@@ -53,6 +55,21 @@ except IOError:
 
 # BMW, 140+ KM, AT, PDC, AC, CC, Xen, Pb/On, 15k
 page_url = "https://www.otomoto.pl/osobowe/bmw/?search%5Bfilter_float_price%3Ato%5D=15000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_no_accident%5D=1&search%5Border%5D=filter_float_mileage%3Aasc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bcountry%5D="
+
+# === IFTTT integration === 
+
+# TODO: hide i_m_k
+
+event_name = 'new-car-otomoto'
+ifttt_maker_key = 'TIRnRB6mBIf2k7j36_Z3l'
+webhook_url = f'https://maker.ifttt.com/trigger/{event_name}/with/key/{ifttt_maker_key}'
+
+def email_alert(first):
+    report = {}
+    report["value1"] = first
+    # report["value2"] = second
+    # report["value3"] = third
+    requests.post(webhook_url, data=report)
 
 # === function to scrape data ===
 
@@ -202,7 +219,7 @@ if counter2 != 0:
                                    " URL.",  icon_path="icons/www.ico", duration=None)
     else:
         # print ("Ok - URLs saved in 'output/search-output.txt' anyway.")
-        print("Ok - URLs saved in a file.")
+        print("Ok - URLs saved to a file.")
         # print("Script run time:", datetime.now()-start)
         # sys.exit()
 else:
@@ -219,20 +236,27 @@ try:
 
     diff = [line for line in f1 if line not in f2] # lines present only in f1
     diff1 = [line for line in f2 if line not in f1] # lines present only in f2
+    # *NOTE file2 must be > file1
 
     # print (diff1) # debug
 
-    # with open('output/' + today_date + '/diff.txt', 'w') as w:
-    with open('diff/diff-' + today_date + '.txt', 'w') as w:
-        for item in diff1: 
-            w.write(item)
-            # *NOTE file2 must be > file1
-
-    # file_previous_run.close()
-    # file_current_run.close()
-
+    if len(diff1) == 0: # check if set is empty - if it is then there are no differences between files 
+        print('No difference between files.')
+    else:
+        # with open('output/' + today_date + '/diff.txt', 'w') as w:
+        with open('diff/diff-' + today_date + '.txt', 'w') as w:
+            counter4 = 0
+            for item in diff1: 
+                w.write(item)
+                email_alert(item) # send email 
+                counter4 += 1
+        if counter4 <= 0:
+            print ('No new cars since last run.')
+        else:
+            print (counter4, "new cars since last run! Go check them now!")
+            
 except IOError:
-    print("First run. Can't diff.")
+    print("No previous data - can't diff.")
 
 # === run time ===
 
