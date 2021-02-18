@@ -16,3 +16,11 @@ automate.sh
 background-checker.scpt 
 icons/car.png
 .ds_store
+date.pk
+imk.pk
+key.py
+automate-*
+date-olx.pk
+scraper-olx.py
+output-olx
+_*

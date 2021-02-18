@@ -14,6 +14,7 @@
 
 ## Release History
 
+- 0.8: Changed URL; attempt to hide API key; changes to notifications.
 - 0.7: Notifications (Windows & macOS; showing script's run time in seconds; improved regex formula to remove IDs at the end of URLs. 
 - 0.6: Sending email via IFTTT if new car is found.
 - 0.5: Disabled user input once again - hardcoded values; implemented file diff; files & folders are created with unique ID.

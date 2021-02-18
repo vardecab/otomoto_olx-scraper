@@ -15,6 +15,7 @@ import certifi # fix certificate issue: https://stackoverflow.com/questions/5280
 from sys import platform # check platform (Windows/Linux/macOS)
 if platform == 'win32':
     from win10toast_persist import ToastNotifier # Windows 10 notifications
+    # TODO: open URL on click // https://stackoverflow.com/questions/62828043/how-to-perform-a-function-when-toast-notification-is-clicked-in-python
     toaster = ToastNotifier() # initialize win10toast
    # from termcolor import colored # colored input/output in terminal
 elif platform == 'darwin':
@@ -54,15 +55,20 @@ if not os.path.isdir("/output/" + today_date):
 
 # === URLs to scrape ===
 
-# BMW, 140+ KM, AT, PDC, AC, CC, Xen, Pb/On, 15k
-page_url = "https://www.otomoto.pl/osobowe/bmw/?search%5Bfilter_float_price%3Ato%5D=15000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_no_accident%5D=1&search%5Border%5D=filter_float_mileage%3Aasc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bcountry%5D="
+# BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 18.5k PLN, Częstochowa + 250 km
+page_url = "https://www.otomoto.pl/osobowe/bmw/czestochowa/?search%5Bfilter_float_price%3Ato%5D=18500&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_no_accident%5D=1&search%5Border%5D=filter_float_mileage%3Aasc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bcountry%5D="
 
 # === IFTTT integration === 
 
-# TODO: hide i_m_k
+filename2 = 'imk.pk'
+try: # might crash on first run
+  # load your data back to memory so we can save new value; NOTE: b = binary
+    with open(filename2, 'rb') as file:
+        ifttt_maker_key = pickle.load(file)
+except IOError:
+    print("First run - no file exists.")
 
 event_name = 'new-car-otomoto'
-ifttt_maker_key = 'TIRnRB6mBIf2k7j36_Z3l'
 webhook_url = f'https://maker.ifttt.com/trigger/{event_name}/with/key/{ifttt_maker_key}'
 
 def email_alert(url):
@@ -191,14 +197,14 @@ with open(r'output/' + today_date + '/4-search-output.txt', 'w') as output: # op
                    # print ("Progress:", counter2)
         if counter2 == 1:
             print("Found", counter2, "result.")
-            if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Found " + str(counter2) +
-                                   " result.",  icon_path="icons/www.ico", duration=None)
+            # if platform == "win32":
+            #     toaster.show_toast("otomoto-scraper", "Found " + str(counter2) +
+            #                        " result.",  icon_path="icons/www.ico", duration=None)
         else:
             print("Found", counter2, "results.")
-            if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Found " + str(counter2) +
-                                   " results.",  icon_path="icons/www.ico", duration=None)
+            # if platform == "win32":
+            #     toaster.show_toast("otomoto-scraper", "Found " + str(counter2) +
+            #                        " results.",  icon_path="icons/www.ico", duration=None)
 
 # === open search results in browser ===
 
@@ -217,15 +223,15 @@ if counter2 != 0:
         if counter3 != 1: # correct grammar for multiple (URLs; them; they)
             print("Opened ", str(counter3),
                   " URLs in the browser. Go and check them before they go 404 ;)")
-            if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) +
-                                   " URLs.",  icon_path="icons/www.ico", duration=None)
+            # if platform == "win32":
+            #     toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) +
+            #                        " URLs.",  icon_path="icons/www.ico", duration=None)
         else: # correct grammar for 1 (URL; it)
             print("Opened", counter3,
                   "URL in the browser. Go and check it before it goes 404 ;)")
-            if platform == "win32":
-                toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) +
-                                   " URL.",  icon_path="icons/www.ico", duration=None)
+            # if platform == "win32":
+            #     toaster.show_toast("otomoto-scraper", "Opened " + str(counter3) +
+            #                        " URL.",  icon_path="icons/www.ico", duration=None)
     else:
        # print ("Ok - URLs saved in 'output/search-output.txt' anyway.")
         print("Ok - URLs saved to a file.")
@@ -254,27 +260,29 @@ try:
         if platform == "darwin":
                 pync.notify('Nie ma nowych aut.', title='otomoto', contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
         elif platform == "win32":
-            toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None) # None = leave notification in Notification Center
+            toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
     else:
         with open('diff/diff-' + today_date + '.txt', 'w') as w:
             counter4 = 0 # counter 
             for url in diff1: # go piece by piece through the differences 
                 w.write(url) # write to file
                 email_alert(url) # send email with URL
-                print("Email has been sent.")
+                # print("Email has been sent.") # debug
                 counter4 += 1 # counter++
         if counter4 <= 0: # should not fire 
             print ('No new cars since last run.')
             if platform == "darwin":
                 pync.notify('Nie ma nowych aut.', title='otomoto', contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
             elif platform == "win32":
-                toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None) # None = leave notification in Notification Center
+                toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
         else:
             print (counter4, "new cars found since last run! Go check them now!")
             if platform == "darwin":
                 pync.notify(f'Nowe auta: {counter4}', title='otomoto', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
             elif platform == "win32":
-                toaster.show_toast(title="otomoto", msg=f'Nowe auta: {counter4}', icon_path="icons/car.ico", duration=None) # None = leave notification in Notification Center
+                toaster.show_toast(title="otomoto", msg=f'Nowe auta: {counter4}', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+                time.sleep(5)
+                webbrowser.open(page_url)
             
 except IOError:
     print("No previous data - can't diff.")
