@@ -57,7 +57,7 @@ if not os.path.isdir("/output/" + today_date):
 # BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 18.5k PLN, Częstochowa + 250 km, sort: newest
 page_url = "https://www.otomoto.pl/osobowe/bmw/czestochowa/?search%5Bfilter_float_price%3Ato%5D=18500&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_no_accident%5D=1&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bcountry%5D="
 
-# === IFTTT integration === 
+# === IFTTT automation === 
 
 filename2 = 'imk.pk'
 try: # might crash on first run
@@ -118,7 +118,7 @@ except: # crashes on 1st run when file is not yet created
     print("Nothing to clean, moving on...")
 
 # number_of_pages_to_crawl = int(input("Ile podstron chcesz przejrzeć? >>> ")) # give user choice
-number_of_pages_to_crawl = 2
+number_of_pages_to_crawl = 2 # *NOTE: search criteria are narrow so 2 is fine
 
 page_number = 1 # begin at page=1
 for page in range(1, number_of_pages_to_crawl+1):
@@ -140,6 +140,8 @@ urls_line_by_line = urls_line_by_line.replace("www", "https://www") # make text 
 
 print("Cleaning the file...")
 
+# === switch to a list to remove duplicates & sort === 
+
 carList = urls_line_by_line.split() # remove "\n"; add to list
 uniqueCarList = list(set(carList)) # remove duplicates 
 
@@ -149,7 +151,8 @@ with open(r"output/" + today_date + "/2-clean.txt", "w", encoding="utf-8") as cl
     for element in sorted(uniqueCarList): # sort URLs
         clean_file.write("%s\n" % element) # write to file
 
-# === tailor the results by using a keyword: brand, model (possibly also engine size etc) ===
+# === tailor the results by using a keyword: brand, model (possibly also engine size etc) === 
+# TODO: mostly broken as of 0.9; core works 
 
 # regex_user_input = input("Jak chcesz zawęzić wyniki? Możesz wpisać markę (np. BMW) albo model (np. E39) >>> ") # for now using brand as quesion but user can put any one-word keyword
 regex_user_input = ""
