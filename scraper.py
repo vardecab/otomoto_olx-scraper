@@ -244,7 +244,7 @@ except NameError:
                 counter4 = 0 # counter 
                 for url in diff1: # go piece by piece through the differences 
                     w.write(url) # write to file
-                    # run_ifttt_automation(url) # run IFTTT automation with URL
+                    run_ifttt_automation(url) # run IFTTT automation with URL
                     counter4 += 1 # counter++
             if counter4 <= 0: # should not fire 
                 print ('No new cars since last run.')
