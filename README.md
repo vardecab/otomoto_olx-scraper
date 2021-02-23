@@ -1,6 +1,6 @@
 # otomoto-scraper
 
->Scrape car offers from Otomoto․pl and send email when new car matching search criteria is found.
+>Scrape car offers from OTOMOTO․pl and run IFTTT automation when new car matching search criteria is found.
 
 <!-- Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cumanos sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. -->
 
@@ -14,6 +14,7 @@
 
 ## Release History
 
+- 0.9: Cleaned the code - renamed variables & function, reduced number of `.txt` files used; fixed a bug that was causing false positivies because of empty lines, `\n` characters and duplicates; *broke* keyword-search functionality which is not being utilized right now anyway. 
 - 0.8: Changed URL; attempt to hide API key; changes to notifications.
 - 0.7: Notifications (Windows & macOS; showing script's run time in seconds; improved regex formula to remove IDs at the end of URLs. 
 - 0.6: Sending email via IFTTT if new car is found.
