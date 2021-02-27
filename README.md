@@ -1,6 +1,6 @@
 # otomoto-scraper
 
->Scrape car offers from OTOMOTO․pl and run IFTTT automation (send email; add a to-do task) when new car matching search criteria is found.
+>Scrape car offers from OTOMOTO․pl and run IFTTT automation (eg. send email; add a to-do task) when new car(s) matching search criteria is found. With support for native macOS & Windows 10 notifications. 
 
 <!-- Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cumanos sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. -->
 
