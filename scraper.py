@@ -54,8 +54,10 @@ if not os.path.isdir("/output/" + today_date):
 
 # === URLs to scrape ===
 
-# BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 18.5k PLN, Częstochowa + 250 km, sort: newest
-page_url = "https://www.otomoto.pl/osobowe/bmw/czestochowa/?search%5Bfilter_float_price%3Ato%5D=18500&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_no_accident%5D=1&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bcountry%5D="
+# BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 2002+, 5k-20k PLN, Częstochowa + 250 km, sort: newest
+page_url = "https://www.otomoto.pl/osobowe/bmw/od-2002/czestochowa/?search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Border%5D=created_at_first%3Adesc"
+
+print("Page URL:", page_url) # debug
 
 # === IFTTT automation === 
 
@@ -91,8 +93,7 @@ def pullData(page_url):
 
     print("Opening page...")
     # print (page_url) # debug 
-    page = urlopen(page_url, context=ssl.create_default_context(
-        cafile=certifi.where())) # fix certificate issue
+    page = urlopen(page_url, context=ssl.create_default_context(cafile=certifi.where())) # fix certificate issue
 
     print("Scraping page...")
     soup = BeautifulSoup(page, 'html.parser') # parse the page
@@ -117,14 +118,19 @@ try:
 except: # crashes on 1st run when file is not yet created
     print("Nothing to clean, moving on...")
 
-# number_of_pages_to_crawl = int(input("Ile podstron chcesz przejrzeć? >>> ")) # give user choice
-number_of_pages_to_crawl = 2 # *NOTE: search criteria are narrow so 2 is fine
+page = urlopen(page_url, context=ssl.create_default_context(cafile=certifi.where())) # fix certificate issue; open URL
+soup = BeautifulSoup(page, 'html.parser') # parse the page
 
+number_of_pages_to_crawl = ([item.get_text(strip=True) for item in soup.select("span.page")]) # get page numbers from the bottom of the page
+number_of_pages_to_crawl = int(number_of_pages_to_crawl[-1]) # get the last element from the list ^ to get the the max page # and convert to int 
+print('How many pages are there to crawl?', number_of_pages_to_crawl)
+
+page_prefix = '&page='
 page_number = 1 # begin at page=1
 for page in range(1, number_of_pages_to_crawl+1):
     print("Page number:", page_number, "/",
           number_of_pages_to_crawl) 
-    full_page_url = f"{page_url}{page_number}"
+    full_page_url = f"{page_url}{page_prefix}{page_number}"
     pullData(full_page_url)
     page_number += 1 # go to next page
 
@@ -144,6 +150,7 @@ print("Cleaning the file...")
 
 carList = urls_line_by_line.split() # remove "\n"; add to list
 uniqueCarList = list(set(carList)) # remove duplicates 
+print(f'There are {len(uniqueCarList)} cars in total.')
 
 print("File cleaned up. New lines added.")
 
@@ -238,10 +245,10 @@ except NameError:
 
         if len(diff1) == 0: # check if set is empty - if it is then there are no differences between files 
             print('Files are the same.')
-            if platform == "darwin":
-                    pync.notify('Nie ma nowych aut.', title='otomoto', contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
-            elif platform == "win32":
-                toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+            # if platform == "darwin":
+                    # pync.notify('Nie ma nowych aut.', title='otomoto', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
+            # elif platform == "win32":
+                # toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
         else:
             with open('diff/diff-' + today_date + '.txt', 'w') as w:
                 counter4 = 0 # counter 
@@ -251,10 +258,10 @@ except NameError:
                     counter4 += 1 # counter++
             if counter4 <= 0: # should not fire 
                 print ('No new cars since last run.')
-                if platform == "darwin":
-                    pync.notify('Nie ma nowych aut.', title='otomoto', contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
-                elif platform == "win32":
-                    toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+                # if platform == "darwin":
+                    # pync.notify('Nie ma nowych aut.', title='otomoto', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
+                # elif platform == "win32":
+                    # toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
             else:
                 print (counter4, "new cars found since last run! Go check them now!")
                 if platform == "darwin":

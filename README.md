@@ -14,6 +14,7 @@
 
 ## Release History
 
+- 0.10: Pagination support - script will scrape only the # of pages that are available for certain search query instead of relying on hard-coded value. Also: turned off notifications when there are no new cars; fixed a bug that prevented adding more than 32 cars to the file.
 - 0.9: Cleaned the code - renamed variables & function, reduced number of `.txt` files used; fixed a bug that was causing false positivies because of empty lines, `\n` characters and duplicates; *broke* keyword-search functionality which is not being utilized right now anyway. 
 - 0.8: Changed URL; attempt to hide API key; changes to notifications.
 - 0.7: Notifications (Windows & macOS; showing script's run time in seconds; improved regex formula to remove IDs at the end of URLs. 
