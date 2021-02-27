@@ -9,62 +9,66 @@ import time # delay execution; calculate script's run time
 from datetime import datetime # add IDs to files/folders' names
 from alive_progress import alive_bar # progress bar
 import webbrowser # open browser
-import ssl # fix certificate issue: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
-import certifi # fix certificate issue: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
+import ssl # certificate issue fix: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
+import certifi # certificate issue fix: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
 from sys import platform # check platform (Windows/Linux/macOS)
 if platform == 'win32':
     from win10toast_persist import ToastNotifier # Windows 10 notifications
-    # TODO: open URL on click // https://stackoverflow.com/questions/62828043/how-to-perform-a-function-when-toast-notification-is-clicked-in-python
     toaster = ToastNotifier() # initialize win10toast
     # from termcolor import colored # colored input/output in terminal
 elif platform == 'darwin':
     import pync # macOS notifications 
 import requests # for IFTTT integration / webhook to send emails
+import gdshortener # shorten URLs using is.gd 
 
 # === start + run time ===
 
 start = time.time() # run time start
 print("Starting...")
 
-# === have current date in exported files' names ===
+# === have current date & time in exported files' names ===
 
 # https://www.w3schools.com/python/python_datetime.asp
-today_date = datetime.strftime(datetime.now(), '%y%m%d_%f') # YYMMDD_microsecond
+this_run_datetime = datetime.strftime(datetime.now(), '%y%m%d-%H%M%S') # eg 210120-173112
 
-filename = 'date.pk'
+file_saved_date = 'data/date.pk'
 try: # might crash on first run
     # load your data back to memory so we can save new value; NOTE: b = binary
-    with open(filename, 'rb') as file:
-        previous_date = pickle.load(file) # keep previous_date (last time the script ran) in a file so we can retrieve it later and compare / diff files 
-        print("Previous date:", previous_date) 
+    with open(file_saved_date, 'rb') as file:
+        previous_run_datetime = pickle.load(file) # keep previous_run_datetime (last time the script ran) in a file so we can retrieve it later and compare / diff files 
+        print("Previous run:", previous_run_datetime) 
 except IOError:
     print("First run - no file exists.") # if it's the first time script is running we won't have the file created so we skip  
 
 try:
-    with open(filename, 'wb') as file: # open pickle file
-        pickle.dump(today_date, file) # dump today_date (the time script is running) into the file so then we can use it to compare / diff files
-        print("Today date: ", today_date) 
+    with open(file_saved_date, 'wb') as file: # open pickle file
+        pickle.dump(this_run_datetime, file) # dump this_run_datetime (the time script is running) into the file so then we can use it to compare / diff files
+        print("This run:", this_run_datetime) 
 except IOError:
     print("File doesn't exist.")
 
-# create new YYMMDD_microsecond folder
-if not os.path.isdir("/output/" + today_date):
-    os.mkdir("output/" + today_date) # example: 211220_123456
-    print("Folder created: " + today_date)
+# create new folder
+if not os.path.isdir("/output/" + this_run_datetime):
+    os.mkdir("output/" + this_run_datetime) # eg 210120-173112
+    print("Folder created:", this_run_datetime)
 
-# === URLs to scrape ===
+# === URL to scrape ===
 
 # BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 2002+, 5k-20k PLN, Częstochowa + 250 km, sort: newest
 page_url = "https://www.otomoto.pl/osobowe/bmw/od-2002/czestochowa/?search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Border%5D=created_at_first%3Adesc"
 
-print("Page URL:", page_url) # debug
+# === shorten the URL === 
+
+isgd = gdshortener.ISGDShortener() # initialize
+page_url_shortened = isgd.shorten(page_url) # shorten URL; result is in tuple
+print("Page URL:", page_url_shortened[0]) # [0] to get the first element from tuple
 
 # === IFTTT automation === 
 
-filename2 = 'imk.pk'
+file_saved_imk = 'data/imk.pk'
 try: # might crash on first run
     # load your data back to memory so we can save new value; NOTE: b = binary
-    with open(filename2, 'rb') as file:
+    with open(file_saved_imk, 'rb') as file:
         ifttt_maker_key = pickle.load(file)
 except IOError:
     print("First run - no file exists.")
@@ -78,6 +82,17 @@ def run_ifttt_automation(url):
     # report["value2"] = second
     # report["value3"] = third
     requests.post(webhook_url, data=report)
+
+# === pimp Windows 10 notification === 
+
+# https://stackoverflow.com/questions/63867448/interactive-notification-windows-10-using-python
+def open_url():
+    try: 
+        webbrowser.open_new(page_url)
+        print('Opening search results...')  
+    except: 
+        print('Failed to open search results. Unsupported variable type.')
+    
 
 # === function to scrape data ===
 
@@ -99,7 +114,7 @@ def pullData(page_url):
     soup = BeautifulSoup(page, 'html.parser') # parse the page
 
     # 'a' (append) to add lines to existing file vs overwriting
-    with open(r"output/" + today_date + "/1-output.txt", "a", encoding="utf-8") as bs_output:
+    with open(r"output/" + this_run_datetime + "/1-output.txt", "a", encoding="utf-8") as bs_output:
         # print (colored("Creating local file to store URLs...", 'green')) # colored text on Windows
         counter = 0 # counter to get # of URLs/cars
         with alive_bar(bar="classic2", spinner="classic") as bar: # progress bar
@@ -112,11 +127,13 @@ def pullData(page_url):
 
 # === run URLs in function ^ ===
 
+# *NOTE 1/2: perhaps no longer needed as of 0.10? 
 try:
-    open(r"output/" + today_date + "/1-output.txt",
+    open(r"output/" + this_run_datetime + "/1-output.txt",
          "w").close() # clean main file at start
 except: # crashes on 1st run when file is not yet created
     print("Nothing to clean, moving on...")
+# *NOTE 2/2: ^
 
 page = urlopen(page_url, context=ssl.create_default_context(cafile=certifi.where())) # fix certificate issue; open URL
 soup = BeautifulSoup(page, 'html.parser') # parse the page
@@ -136,7 +153,7 @@ for page in range(1, number_of_pages_to_crawl+1):
 
 # === make file more pretty by adding new lines ===
 
-with open(r"output/" + today_date + "/1-output.txt", "r", encoding="utf-8") as scraping_output_file: # open file...
+with open(r"output/" + this_run_datetime + "/1-output.txt", "r", encoding="utf-8") as scraping_output_file: # open file...
     print("Reading file to clean up...")
     read_scraping_output_file = scraping_output_file.read() # ... and read it
 
@@ -154,7 +171,7 @@ print(f'There are {len(uniqueCarList)} cars in total.')
 
 print("File cleaned up. New lines added.")
 
-with open(r"output/" + today_date + "/2-clean.txt", "w", encoding="utf-8") as clean_file:
+with open(r"output/" + this_run_datetime + "/2-clean.txt", "w", encoding="utf-8") as clean_file:
     for element in sorted(uniqueCarList): # sort URLs
         clean_file.write("%s\n" % element) # write to file
 
@@ -170,9 +187,9 @@ else:
     print("Opening file to search for keyword:", regex_user_input)
     reg = re.compile(regex_user_input) # matches "KEYWORD" in lines
     counter2 = 0 # another counter to get the # of search results
-    with open(r'output/' + today_date + '/3-search_keyword.txt', 'w') as output: # open file for writing
+    with open(r'output/' + this_run_datetime + '/3-search_keyword.txt', 'w') as output: # open file for writing
         print("Searching for keyword...")
-        with open(r'output/' + today_date + '/2-clean.txt', 'r', encoding='UTF-8') as clean_no_dupes_file: # look for keyword in the clean file without empty lines and duplicates 
+        with open(r'output/' + this_run_datetime + '/2-clean.txt', 'r', encoding='UTF-8') as clean_no_dupes_file: # look for keyword in the clean file without empty lines and duplicates 
             with alive_bar(bar="circles", spinner="dots_waves") as bar:
                 for line in clean_no_dupes_file: # read file line by line
                     if reg.search(line): # if there is a match anywhere in a line
@@ -197,7 +214,7 @@ else:
         # user_choice_open_urls = input("Chcesz otworzyć linki w przeglądarce? [y/n] >>> ")
         user_choice_open_urls = 'n'
         if user_choice_open_urls == 'y':
-            with open(r'" + today_date + "/3-search_keyword.txt', 'r', encoding='UTF-8') as search_results:
+            with open("output/" + this_run_datetime + "/3-search_keyword.txt", 'r', encoding='UTF-8') as search_results:
                 counter3 = 0
                 print("Opening URLs in browser...")
                 with alive_bar(bar="circles", spinner="dots_waves") as bar:
@@ -233,8 +250,8 @@ except NameError:
     print("Variable not defined. Keyword wasn't provided.") 
 
     try:
-        file_previous_run = open('output/' + previous_date + '/2-clean.txt', 'r') # 1st file 
-        file_current_run = open('output/' + today_date + '/2-clean.txt', 'r') # 2nd file 
+        file_previous_run = open('output/' + previous_run_datetime + '/2-clean.txt', 'r') # 1st file 
+        file_current_run = open('output/' + this_run_datetime + '/2-clean.txt', 'r') # 2nd file 
 
         f1 = [x for x in file_previous_run.readlines()] # set with lines from 1st file  
         f2 = [x for x in file_current_run.readlines()] # set with lines from 2nd file 
@@ -248,9 +265,9 @@ except NameError:
             # if platform == "darwin":
                     # pync.notify('Nie ma nowych aut.', title='otomoto', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
             # elif platform == "win32":
-                # toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+                # toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
         else:
-            with open('diff/diff-' + today_date + '.txt', 'w') as w:
+            with open('output/diff/diff-' + this_run_datetime + '.txt', 'w') as w:
                 counter4 = 0 # counter 
                 for url in diff1: # go piece by piece through the differences 
                     w.write(url) # write to file
@@ -261,13 +278,13 @@ except NameError:
                 # if platform == "darwin":
                     # pync.notify('Nie ma nowych aut.', title='otomoto', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
                 # elif platform == "win32":
-                    # toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+                    # toaster.show_toast(title="otomoto", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
             else:
                 print (counter4, "new cars found since last run! Go check them now!")
                 if platform == "darwin":
                     pync.notify(f'Nowe auta: {counter4}', title='otomoto', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
                 elif platform == "win32":
-                    toaster.show_toast(title="otomoto", msg=f'Nowe auta: {counter4}', icon_path="icons/car.ico", duration=None, threaded=True) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+                    toaster.show_toast(title="otomoto", msg=f'Nowe auta: {counter4}', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
                     time.sleep(5)
                     webbrowser.open(page_url)
                 
