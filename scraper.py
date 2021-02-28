@@ -13,7 +13,7 @@ import ssl # certificate issue fix: https://stackoverflow.com/questions/52805115
 import certifi # certificate issue fix: https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
 from sys import platform # check platform (Windows/Linux/macOS)
 if platform == 'win32':
-    from win10toast_persist import ToastNotifier # Windows 10 notifications
+    from win10toast_click import ToastNotifier # Windows 10 notifications
     toaster = ToastNotifier() # initialize win10toast
     # from termcolor import colored # colored input/output in terminal
 elif platform == 'darwin':

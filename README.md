@@ -14,7 +14,8 @@
 
 ## Release History
  
-- 0.11: Improved Windows 10 notifications to open URL on-click; added URL shortening module; renamed a few variables; cleaned up project structure.
+- 0.11.1: Replaced old `win10toast` module with `win10toast-click`.
+- 0.11: Improved Windows 10 notifications to open URL on-click using [win10toast-click](https://github.com/vardecab/win10toast-click); added URL shortening module; renamed a few variables; cleaned up project structure.
 - 0.10: Pagination support - script will scrape only the # of pages that are available for certain search query instead of relying on hard-coded value. Also: turned off notifications when there are no new cars; fixed a bug that prevented adding more than 32 cars to the file.
 - 0.9: Cleaned the code - renamed variables & function, reduced number of `.txt` files used; fixed a bug that was causing false positivies because of empty lines, `\n` characters and duplicates; *broke* keyword-search functionality which is not being utilized right now anyway. 
 - 0.8: Changed URL; attempt to hide API key; changes to notifications.
@@ -41,7 +42,7 @@ Using [SemVer](http://semver.org/).
 - [alive-progress](https://github.com/rsalmei/alive-progress)
 - [win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications)
 - [win10toast-persist](https://github.com/tnthieding/Windows-10-Toast-Notifications)
-- [win10toast-pimped](https://github.com/vardecab/win10toast-pimped)
+- [win10toast-click](https://github.com/vardecab/win10toast-click)
 - [pync](https://github.com/SeTeM/pync)
 - [GD Shortener](https://github.com/torre76/gd_shortener)
 <!-- - [termcolor](https://pypi.org/project/termcolor/) -->
