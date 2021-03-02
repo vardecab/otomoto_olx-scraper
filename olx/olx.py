@@ -110,7 +110,7 @@ def pullData(page_url):
     print("Opening page...")
     # print (page_url) # debug 
     # page = urlopen(page_url, context=ssl.create_default_context(cafile=certifi.where())) # fix certificate issue # *NOTE: original
-    page = request.urlopen(page_url) # get URL # *NOTE: v: olx
+    page = request.urlopen(page_url, context=ssl.create_default_context(cafile=certifi.where())) # get URL # *NOTE: v: olx
 
     print("Scraping page...")
     # soup = BeautifulSoup(page, 'html.parser') # parse the page # *NOTE: original 

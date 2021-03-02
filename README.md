@@ -14,6 +14,7 @@
 
 ## Release History
  
+- 0.12.1: Tiny bug fix around certificate issue on macOS when requesting a URL.
 - 0.12: Added OLX․pl support 🎉
 - 0.11.1: Replaced old `win10toast` module with `win10toast-click`.
 - 0.11: Improved Windows 10 notifications to open URL on-click using [win10toast-click](https://github.com/vardecab/win10toast-click); added URL shortening module; renamed a few variables; cleaned up project structure.
