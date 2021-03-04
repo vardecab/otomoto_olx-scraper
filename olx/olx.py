@@ -77,10 +77,10 @@ except IOError:
 event_name = 'new-car-otomoto' # TODO: change the event_name 
 webhook_url = f'https://maker.ifttt.com/trigger/{event_name}/with/key/{ifttt_maker_key}'
 
-def run_ifttt_automation(url):
+def run_ifttt_automation(url, date):
     report = {}
     report["value1"] = url
-    # report["value2"] = second
+    report["value2"] = date
     # report["value3"] = third
     requests.post(webhook_url, data=report)
 
@@ -279,7 +279,7 @@ except NameError:
                 with alive_bar(bar="circles", spinner="dots_waves") as bar:
                     for url in diff1: # go piece by piece through the differences 
                         w.write(url) # write to file
-                        run_ifttt_automation(url) # run IFTTT automation with URL
+                        run_ifttt_automation(url, this_run_datetime) # run IFTTT automation with URL
                         # print('Running IFTTT automation...')
                         bar()
                         counter4 += 1 # counter++

@@ -54,8 +54,8 @@ if not os.path.isdir("/output/" + this_run_datetime):
 
 # === URL to scrape ===
 
-# BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 2002+, 5k-20k PLN, Częstochowa + 250 km, sort: newest
-page_url = "https://www.otomoto.pl/osobowe/bmw/od-2002/czestochowa/?search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Border%5D=created_at_first%3Adesc"
+# BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 2002+, 5k-20k PLN, Częstochowa + 250 km, reg in PL, sort: newest
+page_url = "https://www.otomoto.pl/osobowe/bmw/od-2002/czestochowa/?search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_registered%5D=1&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bcountry%5D="
 
 # === shorten the URL === 
 
@@ -76,10 +76,10 @@ except IOError:
 event_name = 'new-car-otomoto'
 webhook_url = f'https://maker.ifttt.com/trigger/{event_name}/with/key/{ifttt_maker_key}'
 
-def run_ifttt_automation(url):
+def run_ifttt_automation(url, date):
     report = {}
     report["value1"] = url
-    # report["value2"] = second
+    report["value2"] = date
     # report["value3"] = third
     requests.post(webhook_url, data=report)
 
@@ -271,7 +271,7 @@ except NameError:
                 with alive_bar(bar="circles", spinner="dots_waves") as bar:
                     for url in diff1: # go piece by piece through the differences 
                         w.write(url) # write to file
-                        run_ifttt_automation(url) # run IFTTT automation with URL
+                        run_ifttt_automation(url, this_run_datetime) # run IFTTT automation with URL
                         # print('Running IFTTT automation...')
                         bar()
                         counter4 += 1 # counter++
