@@ -55,8 +55,8 @@ if not os.path.isdir("olx_output/" + this_run_datetime):
 
 # === URL to scrape ===
 
-# BMW, 140+ KM, AT, Pb/On, 2002+, 18.5k PLN, Tarnów + 100 km, sort: newest
-page_url = 'https://www.olx.pl/motoryzacja/samochody/bmw/tarnow/?search%5Bfilter_float_price%3Ato%5D=18500&search%5Bfilter_float_year%3Afrom%5D=2002&search%5Bfilter_enum_petrol%5D%5B0%5D=petrol&search%5Bfilter_enum_petrol%5D%5B1%5D=diesel&search%5Bfilter_float_enginepower%3Afrom%5D=140&search%5Bfilter_enum_condition%5D%5B0%5D=notdamaged&search%5Bfilter_enum_transmission%5D%5B0%5D=automatic&search%5Bdist%5D=100'
+# BMW, 140+ KM, AT, Pb/On, 2002+, < 15k PLN, Tarnów + 100 km, sort: cheapest
+page_url = 'https://www.olx.pl/motoryzacja/samochody/bmw/tarnow/?search%5Bfilter_float_price%3Ato%5D=15000&search%5Bfilter_float_year%3Afrom%5D=2002&search%5Bfilter_enum_petrol%5D%5B0%5D=petrol&search%5Bfilter_enum_petrol%5D%5B1%5D=diesel&search%5Bfilter_float_enginepower%3Afrom%5D=140&search%5Bfilter_enum_condition%5D%5B0%5D=notdamaged&search%5Bfilter_enum_transmission%5D%5B0%5D=automatic&search%5Border%5D=filter_float_price%3Aasc&search%5Bdist%5D=100'
 
 # === shorten the URL === 
 
@@ -295,8 +295,8 @@ except NameError:
                     pync.notify(f'Nowe auta: {counter4}', title='OLX', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
                 elif platform == "win32":
                     toaster.show_toast(title="OLX", msg=f'Nowe auta: {counter4}', icon_path="../icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
-                    time.sleep(5)
-                    webbrowser.open(page_url)
+                    # time.sleep(5)
+                    # webbrowser.open(page_url)
                 
     except IOError:
         print("No previous data - can't diff.")

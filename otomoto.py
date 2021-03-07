@@ -54,8 +54,8 @@ if not os.path.isdir("/output/" + this_run_datetime):
 
 # === URL to scrape ===
 
-# BMW, 140+ KM, AT, PDC, AC, Xen, Pb/On, 2002+, 5k-20k PLN, Częstochowa + 250 km, reg in PL, sort: newest
-page_url = "https://www.otomoto.pl/osobowe/bmw/od-2002/czestochowa/?search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Bfilter_enum_features%5D%5B2%5D=xenon-lights&search%5Bfilter_enum_features%5D%5B3%5D=cruise-control&search%5Bfilter_enum_registered%5D=1&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=250&search%5Bcountry%5D="
+# BMW, 140+ KM, AT, PDC, AC, Pb/On, 2002+, 5k-15k PLN, Tarnów + 100 km, sort: newest
+page_url = "https://www.otomoto.pl/osobowe/bmw/od-2002/tarnow/?search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=15000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=cvt&search%5Bfilter_enum_gearbox%5D%5B2%5D=dual-clutch&search%5Bfilter_enum_gearbox%5D%5B3%5D=semi-automatic&search%5Bfilter_enum_gearbox%5D%5B4%5D=automatic-stepless-sequential&search%5Bfilter_enum_gearbox%5D%5B5%5D=automatic-stepless&search%5Bfilter_enum_gearbox%5D%5B6%5D=automatic-sequential&search%5Bfilter_enum_gearbox%5D%5B7%5D=automated-manual&search%5Bfilter_enum_gearbox%5D%5B8%5D=direct-no-gearbox&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=rear-parking-sensors&search%5Bfilter_enum_features%5D%5B1%5D=automatic-air-conditioning&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=100&search%5Bcountry%5D"
 
 # === shorten the URL === 
 
@@ -287,8 +287,8 @@ except NameError:
                     pync.notify(f'Nowe auta: {counter4}', title='OTOMOTO', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
                 elif platform == "win32":
                     toaster.show_toast(title="OTOMOTO", msg=f'Nowe auta: {counter4}', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
-                    time.sleep(5)
-                    webbrowser.open(page_url)
+                    # time.sleep(5)
+                    # webbrowser.open(page_url)
                 
     except IOError:
         print("No previous data - can't diff.")

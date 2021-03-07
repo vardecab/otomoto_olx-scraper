@@ -26,8 +26,8 @@ output-olx
 _*
 automate/*
 !automate/.gitkeep
-olx/data
+olx/data/*
 !olx/data/.gitkeep
-olx/olx_output
+olx/olx_output/*
 !olx/olx_output/.gitkeep
 !olx/olx_output/diff/.gitkeep

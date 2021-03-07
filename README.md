@@ -14,6 +14,7 @@
 
 ## Release History
  
+ - 0.12.3: Disabled the option to open browser with search results page; changed URLs.
 - 0.12.2: Added date as 2nd parameter to IFTTT automation. 
 - 0.12.1: Tiny bug fix around certificate issue on macOS when requesting a URL.
 - 0.12: Added OLX․pl support 🎉
