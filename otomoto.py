@@ -138,7 +138,11 @@ page = urlopen(page_url, context=ssl.create_default_context(cafile=certifi.where
 soup = BeautifulSoup(page, 'html.parser') # parse the page
 
 number_of_pages_to_crawl = ([item.get_text(strip=True) for item in soup.select("span.page")]) # get page numbers from the bottom of the page
-number_of_pages_to_crawl = int(number_of_pages_to_crawl[-1]) # get the last element from the list ^ to get the the max page # and convert to int 
+# print(len(number_of_pages_to_crawl)) # debug; 0 = empty
+if len(number_of_pages_to_crawl) > 0:
+    number_of_pages_to_crawl = int(number_of_pages_to_crawl[-1]) # get the last element from the list ^ to get the the max page # and convert to int 
+else: 
+    number_of_pages_to_crawl = 1
 print('How many pages are there to crawl?', number_of_pages_to_crawl)
 
 page_prefix = '&page='
