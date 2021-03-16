@@ -1,33 +1,27 @@
+# other 
+_ds.store
 TODO
 .vscode
-_old
-output/*
-!output/.gitkeep
-diff/*
-!diff/.gitkeep
-icons/link.ico
-icons/browser.ico 
-exe
 __pycache__
-mm-excel
-scraper_mac.py
-output_mac
-automate.sh
-background-checker.scpt 
-icons/car.png
-.ds_store
-date.pk
-imk.pk
-key.py
-automate-*
-date-olx.pk
-scraper-olx.py
-output-olx
-_*
+
+# mm-excel
+_mm-excel
+
+# old files
+_old
+
+# key
+data
+
+# files
+olx1/data
+olx1/output
+olx2/data
+olx2/output
+otomoto1/data
+otomoto1/output
+otomoto2/data
+otomoto2/output
+
+# automate
 automate/*
-!automate/.gitkeep
-olx/data/*
-!olx/data/.gitkeep
-olx/olx_output/*
-!olx/olx_output/.gitkeep
-!olx/olx_output/diff/.gitkeep

@@ -13,7 +13,8 @@
 - lorem ipsum -->
 
 ## Release History
- 
+
+- 0.13: Two files per each platform to support searches in two different locations; improved pagination support on OLX; improved regex; more data sent to IFTTT.
 - 0.12.4: Fixed a bug that prevented the script from running because there was only one OTOMOTO subpage to scrape.
 - 0.12.3: Disabled the option to open browser with search results page; changed URLs.
 - 0.12.2: Added date as 2nd parameter to IFTTT automation. 
