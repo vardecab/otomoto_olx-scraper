@@ -1,5 +1,6 @@
 # other 
-_ds.store
+.DS_Store
+*/.DS_Store
 TODO
 .vscode
 __pycache__
