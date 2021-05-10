@@ -1,5 +1,7 @@
 # otomoto_olx-scraper
 
+![](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-blue)
+
 >Scrape car offers from OTOMOTO․pl & OLX․pl and run IFTTT automation (eg. send email; add a to-do task) when new car(s) matching search criteria is found. With support for native macOS & Windows 10 notifications. 
 
 <!-- Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cumanos sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. -->
@@ -57,8 +59,9 @@ Add ^ to Automator, export as Application and then run in the background via Scr
 
 Using [SemVer](http://semver.org/).
 
-<!-- ## License -->
+## License
 
+![](https://img.shields.io/github/license/vardecab/otomoto_olx-scraper)
 <!-- GNU General Public License v3.0, see [LICENSE.md](https://github.com/vardecab/PROJECT/blob/master/LICENSE). -->
 
 ## Acknowledgements
@@ -83,6 +86,8 @@ Using [SemVer](http://semver.org/).
 - [Connect a Python Script to IFTTT by Enrico Bergamini](https://medium.com/mai-piu-senza/connect-a-python-script-to-ifttt-8ee0240bb3aa)
 - [Use IFTTT web requests to send email alerts by Anthony Hartup](https://anthscomputercave.com/tutorials/ifttt/using_ifttt_web_request_email.html)
 
-<!-- ## Contributing -->
+## Contributing
 
-<!-- If you found a bug or want to propose a feature, feel free to visit [the Issues page](https://github.com/USER/REPO/issues). -->
+![](https://img.shields.io/github/issues/vardecab/otomoto_olx-scraper)
+
+If you found a bug or want to propose a feature, feel free to visit [the Issues page](https://github.com/vardecab/otomoto_olx-scraper/issues).
