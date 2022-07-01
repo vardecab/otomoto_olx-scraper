@@ -55,7 +55,7 @@ if not os.path.isdir("output/" + this_run_datetime):
 # === URL to scrape ===
 
 # BMW 1, 140+ KM, AC, Pb/On, 2002+, 5k-20k PLN, Wrocław + 50 km, sort: newest
-page_url = "https://www.otomoto.pl/osobowe/bmw/seria-1/od-2002/wroclaw/?search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_features%5D%5B0%5D=automatic-air-conditioning&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D=&search%5Bdist%5D=50&search%5Bcountry%5D="
+page_url = "https://www.otomoto.pl/osobowe/bmw/seria-1/od-2002/wroclaw?search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_damaged%5D=0&search%5Bdist%5D=50&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D="
 location = "Wrocław + 50 km"
 
 # === shorten the URL === 
@@ -118,8 +118,8 @@ def pullData(page_url):
         # print (colored("Creating local file to store URLs...", 'green')) # colored text on Windows
         counter = 0 # counter to get # of URLs/cars
         with alive_bar(bar="classic2", spinner="classic") as bar: # progress bar
-            for link in soup.find_all("a", {"class": "offer-title__link"}):
-                bs_output.write(link.get('href'))
+            for link in soup.find_all('a', href=re.compile('oferta')): # find all links with 'oferta' in the href
+                bs_output.write(link.get('href')) # write to file just the clean URL
                 counter += 1 # counter ++
                 bar() # progress bar ++
                 # print ("Adding", counter, "URL to file...")
