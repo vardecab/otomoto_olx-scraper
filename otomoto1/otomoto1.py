@@ -26,10 +26,39 @@ import gdshortener # shorten URLs using is.gd e
 start = time.time() # run time start
 print("Starting...")
 
-# === have current date & time in exported files' names ===
+# --------- get current date --------- #
 
 # https://www.w3schools.com/python/python_datetime.asp
 this_run_datetime = datetime.strftime(datetime.now(), '%y%m%d-%H%M%S') # eg 210120-173112
+
+# ---------- create folders ---------- #
+
+# create folder if it doesn't exist
+if not os.path.isdir("../data"):
+    os.mkdir("../data" ) # output
+    print("Folder created:", "../data")
+    
+# create folder if it doesn't exist
+if not os.path.isdir("data"):
+    os.mkdir("data" ) # output
+    print("Folder created:", "data")
+    
+# create folder if it doesn't exist
+if not os.path.isdir("output"):
+    os.mkdir("output" ) # output
+    print("Folder created:", "output")
+    
+# create folder if it doesn't exist
+if not os.path.isdir("output/diff"):
+    os.mkdir("output/diff" ) # output
+    print("Folder created:", "output/diff")
+
+# create new folder
+if not os.path.isdir("output/" + this_run_datetime):
+    os.mkdir("output/" + this_run_datetime) # eg 210120-173112
+    print("Folder created:", this_run_datetime)
+    
+# === have current date & time in exported files' names ===
 
 file_saved_date = 'data/date.pk'
 try: # might crash on first run
@@ -38,25 +67,22 @@ try: # might crash on first run
         previous_run_datetime = pickle.load(file) # keep previous_run_datetime (last time the script ran) in a file so we can retrieve it later and compare / diff files 
         print("Previous run:", previous_run_datetime) 
 except IOError:
-    print("First run - no file exists.") # if it's the first time script is running we won't have the file created so we skip  
+    # print("First run - there might be some issues as necessary files don't exist yet. Second run should be fine.") # if it's the first time script is running we won't have the file created so we skip  
+    print("Note: it's the first script run.")
+    previous_run_datetime = ""
 
 try:
     with open(file_saved_date, 'wb') as file: # open pickle file
         pickle.dump(this_run_datetime, file) # dump this_run_datetime (the time script is running) into the file so then we can use it to compare / diff files
         print("This run:", this_run_datetime) 
 except IOError:
-    print("File doesn't exist.")
-
-# create new folder
-if not os.path.isdir("output/" + this_run_datetime):
-    os.mkdir("output/" + this_run_datetime) # eg 210120-173112
-    print("Folder created:", this_run_datetime)
+    print("First run - file to compare files doesn't exist yet.")
 
 # === URL to scrape ===
 
-# BMW 1, 140+ KM, AC, Pb/On, 2002+, 5k-20k PLN, Poznan + 100 km, sort: newest
-page_url = "https://www.otomoto.pl/osobowe/bmw/seria-1/od-2002/poznan?search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_damaged%5D=0&search%5Bdist%5D=100&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D="
-location = "Poznan + 100 km"
+# BMW 3, 140+ KM, AC, Pb/On, 2002+, 5k-50k PLN, Poznan + 200 km, sort: newest
+page_url = "https://www.otomoto.pl/osobowe/bmw/seria-3/od-2002/poznan?search%5Bfilter_float_price%3Afrom%5D=5000&search%5Bfilter_float_price%3Ato%5D=50000&search%5Bfilter_enum_fuel_type%5D%5B0%5D=petrol&search%5Bfilter_enum_fuel_type%5D%5B1%5D=diesel&search%5Bfilter_float_engine_power%3Afrom%5D=140&search%5Bfilter_enum_damaged%5D=0&search%5Bdist%5D=200&search%5Border%5D=created_at_first%3Adesc&search%5Bbrand_program_id%5D%5B0%5D="
+location = "Poznan + 200 km"
 
 # === shorten the URL === 
 
@@ -71,11 +97,10 @@ try: # might crash on first run
     # load your data back to memory so we can save new value; NOTE: b = binary
     with open(file_saved_imk, 'rb') as file:
         ifttt_maker_key = pickle.load(file)
-except IOError:
-    print("First run - no file exists.")
-
-event_name = 'new-car'
-webhook_url = f'https://maker.ifttt.com/trigger/{event_name}/with/key/{ifttt_maker_key}'
+    event_name = 'new-car'
+    webhook_url = f'https://maker.ifttt.com/trigger/{event_name}/with/key/{ifttt_maker_key}'
+except:
+    print("No key found. If you want to use IFTTT automation, then create .pk file with your IFTTT key and save it in ../data/imk.pk")
 
 def run_ifttt_automation(url, date, location):
     report = {}
@@ -254,50 +279,52 @@ try:
 except NameError:
     print("Variable not defined. Keyword wasn't provided.") 
 
-    try:
+    if previous_run_datetime == "": # if it's the first script run
+        file_previous_run = "" # let it be empty
+    else: 
         file_previous_run = open('output/' + previous_run_datetime + '/2-clean.txt', 'r') # 1st file 
-        file_current_run = open('output/' + this_run_datetime + '/2-clean.txt', 'r') # 2nd file 
+    file_current_run = open('output/' + this_run_datetime + '/2-clean.txt', 'r') # 2nd file 
 
+    if file_previous_run == "": # if it's the first script run
+        f1 = "" # let it be empty
+    else: 
         f1 = [x for x in file_previous_run.readlines()] # set with lines from 1st file  
-        f2 = [x for x in file_current_run.readlines()] # set with lines from 2nd file 
+    f2 = [x for x in file_current_run.readlines()] # set with lines from 2nd file 
 
-        diff = [line for line in f1 if line not in f2] # lines present only in 1st file 
-        diff1 = [line for line in f2 if line not in f1] # lines present only in 2nd file 
-        # *NOTE file2 must be > file1
+    diff = [line for line in f1 if line not in f2] # lines present only in 1st file 
+    diff1 = [line for line in f2 if line not in f1] # lines present only in 2nd file 
+    # *NOTE file2 must be > file1
 
-        if len(diff1) == 0: # check if set is empty - if it is then there are no differences between files 
-            print('Files are the same.')
-            # if platform == "darwin":
-            #         pync.notify('Nie ma nowych aut.', title='OTOMOTO', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
-            # elif platform == "win32":
-            #     toaster.show_toast(title="OTOMOTO", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+    if len(diff1) == 0: # check if set is empty - if it is then there are no differences between files 
+        print('Files are the same.')
+        if platform == "darwin":
+                pync.notify('Nie ma nowych aut.', title='OTOMOTO', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
+        elif platform == "win32":
+            toaster.show_toast(title="OTOMOTO", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+    else:
+        with open('output/diff/diff-' + this_run_datetime + '.txt', 'w') as w:
+            counter4 = 0 # counter 
+            with alive_bar(bar="circles", spinner="dots_waves") as bar:
+                for url in diff1: # go piece by piece through the differences 
+                    w.write(url) # write to file
+                    # run_ifttt_automation(url, this_run_datetime, location) # run IFTTT automation with URL
+                    # print('Running IFTTT automation...')
+                    bar()
+                    counter4 += 1 # counter++
+        if counter4 <= 0: # should not fire 
+            print ('No new cars since last run.')
+            if platform == "darwin":
+                pync.notify('Nie ma nowych aut.', title='OTOMOTO', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
+            elif platform == "win32":
+                toaster.show_toast(title="OTOMOTO", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
         else:
-            with open('output/diff/diff-' + this_run_datetime + '.txt', 'w') as w:
-                counter4 = 0 # counter 
-                with alive_bar(bar="circles", spinner="dots_waves") as bar:
-                    for url in diff1: # go piece by piece through the differences 
-                        w.write(url) # write to file
-                        run_ifttt_automation(url, this_run_datetime, location) # run IFTTT automation with URL
-                        # print('Running IFTTT automation...')
-                        bar()
-                        counter4 += 1 # counter++
-            if counter4 <= 0: # should not fire 
-                print ('No new cars since last run.')
-                # if platform == "darwin":
-                #     pync.notify('Nie ma nowych aut.', title='OTOMOTO', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png") # appIcon="" doesn't work, using contentImage instead
-                # elif platform == "win32":
-                #     toaster.show_toast(title="OTOMOTO", msg='Nie ma nowych aut.', icon_path="icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
-            else:
-                print (counter4, "new cars found since last run! Go check them now!")
-                if platform == "darwin":
-                    pync.notify(f'Nowe auta: {counter4}', title='OTOMOTO', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
-                elif platform == "win32":
-                    toaster.show_toast(title="OTOMOTO", msg=f'Nowe auta: {counter4}', icon_path="../icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
-                    # time.sleep(5)
-                    # webbrowser.open(page_url)
-                
-    except IOError:
-        print("No previous data - can't diff.")
+            print (counter4, "new cars found since last run! Go check them now!")
+            if platform == "darwin":
+                pync.notify(f'Nowe auta: {counter4}', title='OTOMOTO', open=page_url, contentImage="https://i.postimg.cc/t4qh2n6V/car.png", sound="Funk") # appIcon="" doesn't work, using contentImage instead
+            elif platform == "win32":
+                toaster.show_toast(title="OTOMOTO", msg=f'Nowe auta: {counter4}', icon_path="../icons/car.ico", duration=None, threaded=True, callback_on_click=open_url) # duration=None - leave notification in Notification Center; threaded=True - rest of the script will be allowed to be executed while the notification is still active
+                # time.sleep(5)
+                # webbrowser.open(page_url)
 
 else:
     print("Keyword was provided; search was successful.") 

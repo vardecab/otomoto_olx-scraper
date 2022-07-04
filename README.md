@@ -12,6 +12,9 @@
 ![macOS](https://user-images.githubusercontent.com/6877391/111393391-f9eb8b80-86b8-11eb-98a3-4e908790656d.png)
 
 ## How to use
+
+<i>Note: There are 2 scripts for OTOMOTO — they're the same except for the URL. Using both files (or creating `otomoto3.py`, `otomoto4.py`, etc.) is useful when looking for a car in different location or using different search criteria altogether. Same applies for OLX.</i> 
+
 ### macOS 
 How to chain the scripts:
 ```sh
@@ -36,6 +39,7 @@ Add ^ to Automator, export as Application and then run in the background via Scr
 
 ## Release History
 
+- 0.15: Updated the `otomoto1.py` & `otomoto2.py` scripts to handle first run properly — create folders, empty variables. 
 - 0.14: Updated the URLs and BeautifulSoup's selectors so the script works again for OTOMOTO.
 - 0.13: Two files per each platform to support searches in two different locations; improved pagination support on OLX; improved regex; more data sent to IFTTT.
 - 0.12.4: Fixed a bug that prevented the script from running because there was only one OTOMOTO subpage to scrape.
