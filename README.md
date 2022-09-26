@@ -1,5 +1,14 @@
 # otomoto_olx-scraper
 
+![Not Maintained](https://img.shields.io/badge/Maintenance%20Level-Not%20Maintained-yellow.svg)
+
+<b>As of late 2022, serious rewrite is necessary to fix crawling issues.</b>
+
+<br>
+<hr>
+<br>
+<br>
+
 ![](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-blue)
 
 >Scrape car offers from OTOMOTO․pl & OLX․pl and run IFTTT automation (eg. send email; add a to-do task) when new car(s) matching search criteria is found. With support for native macOS & Windows 10 notifications. 
